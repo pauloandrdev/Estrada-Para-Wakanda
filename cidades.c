@@ -51,29 +51,12 @@ Estrada *getEstrada(const char *nomeArquivo) {
     }
 
     for (int i = 0; i < estrada->N; i++) {
-        if (fscanf(arquivo, "%d", &estrada->C[i].Posicao) != 1) {
+        if (fscanf(arquivo, "%d %255s", &estrada->C[i].Posicao, estrada->C[i].Nome) != 2) {
             free(estrada->C);
             free(estrada);
             fclose(arquivo);
             return NULL;
         }
-
-        char linha[256];
-        if (fgets(linha, sizeof(linha), arquivo) == NULL) {
-            free(estrada->C);
-            free(estrada);
-            fclose(arquivo);
-            return NULL;
-        }
-
-        char *nome = linha;
-        while (*nome == ' ' || *nome == '\t') nome++;
-        char *fim = nome + strlen(nome) - 1;
-        while (fim > nome && (*fim == ' ' || *fim == '\t' || *fim == '\n')) fim--;
-        *(fim + 1) = '\0';
-
-        strncpy(estrada->C[i].Nome, nome, 255);
-        estrada->C[i].Nome[255] = '\0';
 
         if (estrada->C[i].Posicao <= 0 || estrada->C[i].Posicao >= estrada->T) {
             free(estrada->C);
@@ -112,9 +95,9 @@ double calcularMenorVizinhanca(const char *nomeArquivo) {
         } else if (i == estrada->N - 1) {
             vizinhanca = (estrada->C[i].Posicao - estrada->C[i - 1].Posicao) / 2.0;
         } else {
-            double vizinhancaEsquerda = (estrada->C[i].Posicao - estrada->C[i - 1].Posicao) / 2.0;
-            double vizinhancaDireita = (estrada->C[i + 1].Posicao - estrada->C[i].Posicao) / 2.0;
-            vizinhanca = vizinhancaEsquerda + vizinhancaDireita;
+            double pontoMedioAnterior = (estrada->C[i].Posicao + estrada->C[i - 1].Posicao) / 2.0;
+            double pontoMedioProximo = (estrada->C[i + 1].Posicao + estrada->C[i].Posicao) / 2.0;
+            vizinhanca = pontoMedioProximo - pontoMedioAnterior;
         }
 
         if (vizinhanca < menorVizinhanca) {
@@ -142,9 +125,9 @@ char *cidadeMenorVizinhanca(const char *nomeArquivo) {
         } else if (i == estrada->N - 1) {
             vizinhanca = (estrada->C[i].Posicao - estrada->C[i - 1].Posicao) / 2.0;
         } else {
-            double vizinhancaEsquerda = (estrada->C[i].Posicao - estrada->C[i - 1].Posicao) / 2.0;
-            double vizinhancaDireita = (estrada->C[i + 1].Posicao - estrada->C[i].Posicao) / 2.0;
-            vizinhanca = vizinhancaEsquerda + vizinhancaDireita;
+            double pontoMedioAnterior = (estrada->C[i].Posicao + estrada->C[i - 1].Posicao) / 2.0;
+            double pontoMedioProximo = (estrada->C[i + 1].Posicao + estrada->C[i].Posicao) / 2.0;
+            vizinhanca = pontoMedioProximo - pontoMedioAnterior;
         }
 
         if (vizinhanca < menorVizinhanca) {
